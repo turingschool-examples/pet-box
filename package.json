@@ -1,0 +1,19 @@
+{
+  "name": "pet-box-1810",
+  "version": "1.0.0",
+  "description": "eh",
+  "main": "server.js",
+  "author": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.1"
+  },
+  "scripts": {
+    "start": "nodemon --exec babel-node server.js"
+  }
+}
