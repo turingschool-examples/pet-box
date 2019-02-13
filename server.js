@@ -41,10 +41,11 @@ app.get('/api/v1/pets/:id', (req, res) => {
 
 app.put('/api/v1/pets/:id', (req, res) => {
   const { name, type } = req.body;
-  const { id } = req.params;
+  let { id } = req.params;
+  id = parseInt(id);
   let petWasFound = false;
   const newPets = app.locals.pets.map(pet => {
-    if (pet.id == id) {
+    if (pet.id === id) {
       petWasFound = true;
       return { id, name, type };
     } else {
@@ -53,7 +54,7 @@ app.put('/api/v1/pets/:id', (req, res) => {
   });
 
   if (!name || !type) return res.status(422).json('Please provide a name and a type');
-  if (!petIndex) return res.status(404).json('Pet not found');
+  if (!petWasFound) return res.status(404).json('Pet not found');
 
   app.locals.pets = newPets;
   return res.sendStatus(204);
