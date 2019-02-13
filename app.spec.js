@@ -3,26 +3,25 @@ import '@babel/polyfill';
 import app from './app';
 
 describe('Api', () => {
-  let pets;
+  let mockPets;
   beforeEach(() => {
-    pets = [
+    mockPets = [
       { id: 1, name: 'fido', type: 'dog' },
       { id: 2, name: 'little orange monster', type: 'cat' },
     ];
 
-    app.locals.pets = pets;
+    app.locals.pets = mockPets;
   });
+
   describe('get /api/v1/pets', () => {
     it('should respond with a 200', async () => {
-
       const response = await request(app).get('/api/v1/pets');
       expect(response.status).toBe(200);
     });
 
     it('should respond with all the pets', async () => {
       const response = await request(app).get('/api/v1/pets');
-
-      expect(response.body).toEqual(pets);
+      expect(response.body).toEqual(mockPets);
     });
   });
 
@@ -30,7 +29,7 @@ describe('Api', () => {
     it('should respond with a 200 and the correct pet', async () => {
       const response = await request(app).get('/api/v1/pets/1');
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(pets[0]);
+      expect(response.body).toEqual(mockPets[0]);
     });
 
     it('should respond with a 404 and error message if it can\'t find the pet', async () => {
@@ -61,13 +60,49 @@ describe('Api', () => {
 
   describe('put /api/v1/pets/:id', () => {
     it('should respond with a 204 successful and update data model', async () => {
-      expect(app.locals.pets[0]).toEqual({ id: 1, name: 'fido', type: 'dog' });
+      expect(app.locals.pets[0]).toEqual(mockPets[0]);
 
       const response = await request(app).put('/api/v1/pets/1')
         .send({ name: 'lassie', type: 'rock' });
       expect(response.status).toBe(204);
-      expect(app.locals.pets[0]).toEqual({ id: "1", name: 'lassie', type: 'rock' });
+      expect(app.locals.pets[0]).toEqual({ id: mockPets[0].id, name: 'lassie', type: 'rock' });
+    });
+
+    it('should return a 422 and an error message if the request body is not ok', async () => {
+      expect(app.locals.pets[0]).toEqual(mockPets[0]);
+
+      const response = await request(app).put('/api/v1/pets/1')
+        .send({ nddame: 'lassie', type: 'rock' });
+      expect(response.status).toBe(422);
+      expect(app.locals.pets[0]).toEqual(mockPets[0]);
+    });
+
+    it('should return a 404 and error message if the pet isn\'t found', async () => {
+      expect(app.locals.pets[0]).toEqual(mockPets[0]);
+
+      const response = await request(app).put('/api/v1/pets/5')
+        .send({ nddame: 'lassie', type: 'rock' });
+      expect(response.status).toBe(422);
+      expect(app.locals.pets[0]).toEqual(mockPets[0]);
     });
   });
 
+  describe('delete /api/v1/pets/:id', () => {
+    it('should delete a pet and return a 204', async () => {
+      expect(app.locals.pets[0].id).toEqual(1);
+
+      const response = await request(app).delete('/api/v1/pets/1');
+      expect(response.status).toBe(204);
+      expect(app.locals.pets[0].id).toEqual(2);
+    });
+
+    it('should return a 404 if the pet isn\'t there', async () => {
+      expect(app.locals.pets[0].id).toEqual(1);
+
+      const response = await request(app).delete('/api/v1/pets/5');
+      expect(response.status).toBe(404);
+      expect(response.body).toBe('Pet not found');
+      expect(app.locals.pets[0].id).toEqual(1);
+    });
+  });
 });

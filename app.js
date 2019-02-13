@@ -1,7 +1,7 @@
 import express from 'express';
+import cors from 'cors';
 const app = express();
 
-import cors from 'cors';
 app.use(cors());
 app.use(express.json());
 
@@ -12,13 +12,21 @@ app.locals.pets = [
   { id: 4, name: 'Aria', type: 'Dog' },
 ];
 
+const send404 = res => (
+  res.status(404).json('Pet not found')
+);
+
+const send422 = res => (
+  res.status(422).json('Please provide a name and a type')
+);
+
 app.get('/api/v1/pets', (req, res) => {
   res.status(200).json(app.locals.pets);
 });
 
 app.post('/api/v1/pets', (req, res) => {
   const { name, type } = req.body;
-  if (!name || !type) return res.status(422).json('Please provide a name and a type');
+  if (!name || !type) return send422(res);
   const newPet = {
     id: Date.now(),
     name,
@@ -28,10 +36,6 @@ app.post('/api/v1/pets', (req, res) => {
   res.status(201).json(app.locals.pets[app.locals.pets.length - 1]);
 });
 
-const send404 = (res) => (
-  res.status(404).json('Pet not found')
-);
-
 app.get('/api/v1/pets/:id', (req, res) => {
   const pet = app.locals.pets.find(pet => pet.id == req.params.id);
   if (!pet) return send404(res);
@@ -40,7 +44,8 @@ app.get('/api/v1/pets/:id', (req, res) => {
 
 app.put('/api/v1/pets/:id', (req, res) => {
   const { name, type } = req.body;
-  const { id } = req.params;
+  let { id } = req.params;
+  id = parseInt(id);
   let petWasFound = false;
   const newPets = app.locals.pets.map(pet => {
     if (pet.id == id) {
@@ -51,7 +56,7 @@ app.put('/api/v1/pets/:id', (req, res) => {
     }
   });
 
-  if (!name || !type) return res.status(422).json('Please provide a name and a type');
+  if (!name || !type) return send422(res)
   if (!petWasFound) return send404(res);
 
   app.locals.pets = newPets;
