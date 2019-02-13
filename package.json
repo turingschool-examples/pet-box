@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "eh",
   "main": "server.js",
-  "author": "",
+  "author": "David Whitaker",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.16.4"

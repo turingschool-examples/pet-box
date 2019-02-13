@@ -18,10 +18,6 @@ app.locals.pets = [
   { id: 4, name: 'Aria', type: 'Dog' },
 ];
 
-app.get('/', (req, res) => {
-  res.status(200).json('hello world');
-});
-
 app.get('/api/v1/pets', (req, res) => {
   res.status(200).json(app.locals.pets);
 });
