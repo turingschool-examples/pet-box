@@ -80,9 +80,9 @@ describe('Api', () => {
     it('should return a 404 and error message if the pet isn\'t found', async () => {
       expect(app.locals.pets[0]).toEqual(mockPets[0]);
 
-      const response = await request(app).put('/api/v1/pets/5')
-        .send({ nddame: 'lassie', type: 'rock' });
-      expect(response.status).toBe(422);
+      const response = await request(app).put('/api/v1/pets/7')
+        .send({ name: 'lassie', type: 'rock' });
+      expect(response.status).toBe(404);
       expect(app.locals.pets[0]).toEqual(mockPets[0]);
     });
   });
